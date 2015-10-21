@@ -6,6 +6,7 @@
 Gamebuino gb;
 int voitureX=8, voitureY=16, i;
 const int limiteRouteH=36, limiteRouteB=12,limiteRouteM=24,nombrePointilles=4;
+int  espacePointilles = 4,taillePointille=LCDWIDTH/nombrePointilles-espacePointilles;
 const byte voiture[] PROGMEM = {16,8,
 B00000111,B11110000,
 B00001011,B11010000,
@@ -21,7 +22,7 @@ void setup(){
   // initialize the Gamebuino object
   gb.begin();
   // shows the start menu
-  gb.titleScreen(F("Le Caca"));
+  gb.titleScreen(F("Crazycar"));
 
 }
 
@@ -30,14 +31,24 @@ void loop(){
   //updates the gamebuino (the display, the sound, the auto backlight... everything)
   //returns true when it's time to render a new frame (20 times/second)
   if(gb.update()){
-    gb.display.drawLine(0,limiteRouteH,LDCWIDTH,limiteRouteH);
-    gb.display.drawLine(0,limiteRouteB,LDCWIDTH,limiteRouteB);
-    for (i=0;i<nombrePointilles;i++)
+    gb.display.drawLine(0,limiteRouteH,LCDWIDTH,limiteRouteH);
+    gb.display.drawLine(0,limiteRouteB,LCDWIDTH,limiteRouteB);
+    for (i=0;i<nombrePointilles+1;i++)
     {
-      
+      gb.display.drawLine(espacePointilles+i*(taillePointille+4),limiteRouteM,espacePointilles+i*(taillePointille+4)+taillePointille,limiteRouteM); //On dessine les pointilles de la route
     }
     
-   gb.display.drawBitmap(voitureX,voitureY,voiture);
+    espacePointilles-=2;
+    if (espacePointilles<-taillePointille) {espacePointilles=4;};
+    if ((gb.buttons.repeat(BTN_DOWN,1))||((voitureY)<limiteRouteB))
+    {
+      voitureY+=2;
+    }
+    if ((gb.buttons.repeat(BTN_UP,1))||((voitureY+8)>limiteRouteH))
+    {
+      voitureY-=2;
+    }
+    gb.display.drawBitmap(voitureX,voitureY,voiture);
+
   }
 }
-
