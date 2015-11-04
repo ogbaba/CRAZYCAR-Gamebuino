@@ -6,7 +6,7 @@
 Gamebuino gb;
 int voitureX=8, voitureY=16, i;
 const int limiteRouteH=36, limiteRouteB=12,limiteRouteM=24,nombrePointilles=4;
-int  espacePointilles = 4,taillePointille=LCDWIDTH/nombrePointilles-espacePointilles;
+int  espacePointilles = 8,taillePointille=LCDWIDTH/nombrePointilles-espacePointilles;
 const byte voiture[] PROGMEM = {16,8,
 B00000111,B11110000,
 B00001011,B11010000,
