@@ -1,3 +1,10 @@
+#include <Backlight.h>
+#include <Battery.h>
+#include <Buttons.h>
+#include <Display.h>
+#include <Gamebuino.h>
+#include <Sound.h>
+
 //imports the SPI library (needed to communicate with Gamebuino's screen)
 #include <SPI.h>
 //imports the Gamebuino library
@@ -6,7 +13,7 @@
 Gamebuino gb;
 int voitureX=8, voitureY=16, i;
 const int limiteRouteH=36, limiteRouteB=12,limiteRouteM=24,nombrePointilles=4;
-int  espacePointilles = 8,taillePointille=LCDWIDTH/nombrePointilles-espacePointilles;
+int  espacePointilles = 4,taillePointille=LCDWIDTH/nombrePointilles-espacePointilles;
 const byte voiture[] PROGMEM = {16,8,
 B00000111,B11110000,
 B00001011,B11010000,
@@ -35,16 +42,17 @@ void loop(){
     gb.display.drawLine(0,limiteRouteB,LCDWIDTH,limiteRouteB);
     for (i=0;i<nombrePointilles+1;i++)
     {
-      gb.display.drawLine(espacePointilles+i*(taillePointille+4),limiteRouteM,espacePointilles+i*(taillePointille+4)+taillePointille,limiteRouteM); //On dessine les pointilles de la route
+      gb.display.drawLine(espacePointilles+i*(taillePointille+8),limiteRouteM,espacePointilles+i*(taillePointille+8)+taillePointille,limiteRouteM); 
+      //On dessine les pointilles de la route, 8 et espacePointilles sont les espaces entre les pointillés, ils doivent être égaux
     }
     
     espacePointilles-=2;
-    if (espacePointilles<-taillePointille) {espacePointilles=4;};
-    if ((gb.buttons.repeat(BTN_DOWN,1))||((voitureY)<limiteRouteB))
+    if (espacePointilles<-taillePointille-4) {espacePointilles=2;};
+    if ((gb.buttons.repeat(BTN_DOWN,1))&&((voitureY+8)<limiteRouteH))
     {
       voitureY+=2;
     }
-    if ((gb.buttons.repeat(BTN_UP,1))||((voitureY+8)>limiteRouteH))
+    if ((gb.buttons.repeat(BTN_UP,1))&&(voitureY>limiteRouteB))
     {
       voitureY-=2;
     }
