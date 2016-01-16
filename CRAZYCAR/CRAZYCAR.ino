@@ -3,7 +3,6 @@
 #include <Buttons.h>
 #include <Display.h>
 #include <Sound.h>
-#include "Struct.h"
 //imports the SPI library (needed to communicate with Gamebuino's screen)
 #include <SPI.h>
 //imports the Gamebuino library
@@ -15,8 +14,8 @@
 //creates a Gamebuino object named gb
 Gamebuino gb;
 
-int voitureX=8, voitureY=16, i;
-int  espacePointilles = 4,taillePointille=LCDWIDTH/NOMBREPOINTILLES-espacePointilles;
+int voitureX=8, voitureY=28, i;
+int  espacePointilles = 4,taillePointille=LCDWIDTH/NOMBREPOINTILLES-espacePointilles, perdu = 0, score = 0;
 const byte voiture[] PROGMEM = {16,8,
 B00000111,B11110000,
 B00001011,B11010000,
@@ -87,7 +86,7 @@ void setup(){
   obs[0].x = -8;
   obs[1].x = 30;
   obs[2].x = 60;
-  obs[0].y = obs[1].y = obs[2].y = 12;
+  obs[0].y = obs[1].y = obs[2].y = 14;
   gb.begin();
   // shows the start menu
   gb.titleScreen(F("Crazycar"));
@@ -99,11 +98,28 @@ void loop(){
   //updates the gamebuino (the display, the sound, the auto backlight... everything)
   //returns true when it's time to render a new frame (20 times/second)
   if(gb.update()){
+    if (!perdu)
+    {
     dDecor();
     dVoiture();
     dObstacles();
-  }
-}
+    }
+    else
+    {
+      voitureY=28;
+      obs[0].y = obs[1].y = obs[2].y = 14;
+      gb.display.clear();
+      gb.display.print("Your score is :");
+      gb.display.print(score);
+    }
+    if (gb.buttons.pressed(BTN_C))
+    {
+      perdu = 0;
+      score = 0;
+      gb.titleScreen(F("Crazycar"));
+    }
+    }
+   }
 
 void dVoiture()
 {
@@ -138,18 +154,27 @@ for (i=0; i<3; i++)
 {
   switch (obs[i].nBitmap)
   {
-    case 0: gb.display.drawBitmap(obs[i].x-=2,obs[i].y,cone);
+    case 0:
+    gb.display.drawBitmap(obs[i].x-=2,obs[i].y,cone);
+    if (gb.collideBitmapBitmap(obs[i].x,obs[i].y,cone,voitureX,voitureY,voiture)) {perdu = 1;}
     break;
-    case 1: gb.display.drawBitmap(obs[i].x-=2,obs[i].y,clous);
+    case 1: 
+    gb.display.drawBitmap(obs[i].x-=2,obs[i].y,clous);
+    if (gb.collideBitmapBitmap(obs[i].x,obs[i].y,clous,voitureX,voitureY,voiture)) {perdu = 1;}
     break;
-    case 2: gb.display.drawBitmap(obs[i].x-=2,obs[i].y,animal);
+    case 2: 
+    gb.display.drawBitmap(obs[i].x-=2,obs[i].y,animal);
+    if (gb.collideBitmapBitmap(obs[i].x,obs[i].y,animal,voitureX,voitureY,voiture)) {perdu = 1;}
     break;
-    case 3: gb.display.drawBitmap(obs[i].x-=2,obs[i].y,homme);
+    case 3: 
+    gb.display.drawBitmap(obs[i].x-=2,obs[i].y,homme);
+    if (gb.collideBitmapBitmap(obs[i].x,obs[i].y,homme,voitureX,voitureY,voiture)) {perdu = 1;}
     break;
 
   }
   if (obs[i].x<=-8) 
   {
+    score++;
     obs[i].x = 84;
     obs[i].y = random(2)*12+14;
     obs[i].nBitmap = random(4);
