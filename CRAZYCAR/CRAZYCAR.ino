@@ -66,6 +66,16 @@ B00111100,
 B00100100,
 B01101100,
 };
+const byte arbre[] PROGMEM = {8,8,
+B00111100,
+B01111110,
+B01111110,
+B01111110,
+B00111100,
+B00011000,
+B00011000,
+B00111100,
+};
 
 void dVoiture();
 void dDecor();
@@ -79,6 +89,13 @@ struct Obstacle
   int nBitmap = 0;
 };
 Obstacle obs[3];
+typedef struct Decor Decor;
+struct Decor
+{
+  int x = 0;
+  int y = 0;
+};
+Decor dec[22];
 
 // the setup routine runs once when Gamebuino starts up
 void setup(){
@@ -87,6 +104,23 @@ void setup(){
   obs[1].x = 30;
   obs[2].x = 60;
   obs[0].y = obs[1].y = obs[2].y = 14;
+  dec[0].x = dec[11].x = 0;
+  dec[1].x = dec[12].x = 8;
+  dec[2].x = dec[13].x = 16;
+  dec[3].x = dec[14].x = 24;
+  dec[4].x = dec[15].x = 32;
+  dec[5].x = dec[16].x = 40;
+  dec[6].x = dec[17].x = 48;
+  dec[7].x = dec[18].x = 56;
+  dec[8].x = dec[19].x = 64;
+  dec[9].x = dec[20].x = 72;
+  dec[10].x = dec[21].x = 80;
+  for (i=0;i<11;i++)
+  {
+    dec[i].y= 37;
+    dec[i+11].y= 1;
+  }
+  
   gb.begin();
   // shows the start menu
   gb.titleScreen(F("Crazycar"));
@@ -138,8 +172,16 @@ void dVoiture()
 }
 void dDecor()
 {
-      gb.display.drawLine(0,LIMITEROUTEH,LCDWIDTH,LIMITEROUTEH);
+    gb.display.drawLine(0,LIMITEROUTEH,LCDWIDTH,LIMITEROUTEH);
     gb.display.drawLine(0,LIMITEROUTEB,LCDWIDTH,LIMITEROUTEB);
+    for (i=0; i<11; i++)
+    {
+      if (dec[i].x<-8){dec[i].x = 80;}
+      if (dec[i+11].x<-8){dec[i+11].x = 80;}
+      gb.display.drawBitmap(dec[i].x-=2,dec[i].y,arbre);
+      gb.display.drawBitmap(dec[i+11].x-=2,dec[i+11].y,arbre);
+
+    }
     for (i=0;i<NOMBREPOINTILLES+1;i++)
     {
       gb.display.drawLine(espacePointilles+i*(taillePointille+8),LIMITEROUTEM,espacePointilles+i*(taillePointille+8)+taillePointille,LIMITEROUTEM);
