@@ -106,14 +106,15 @@ void loop(){
     }
     else
     {
-      voitureY=28;
-      obs[0].y = obs[1].y = obs[2].y = 14;
+      gb.sound.playNote(34,8,1);
       gb.display.clear();
-      gb.display.print("Your score is :");
+      gb.display.print("Your score is: ");
       gb.display.print(score);
     }
     if (gb.buttons.pressed(BTN_C))
     {
+      voitureY=28;
+      obs[0].y = obs[1].y = obs[2].y = 14;
       perdu = 0;
       score = 0;
       gb.titleScreen(F("Crazycar"));
