@@ -152,13 +152,13 @@ void loop(){
     }
     else
     {
-      gb.sound.playCancel();
       gb.display.clear();
       gb.display.print("Your score is: ");
       gb.display.println(score);
       gb.display.print("Press C");
       if (gb.buttons.pressed(BTN_C))
       {
+       gb.sound.playCancel();
        afficherMenu(); 
       }
     }
