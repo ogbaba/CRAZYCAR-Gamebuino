@@ -15,7 +15,13 @@
 Gamebuino gb;
 
 int voitureX=8, voitureY=28, i;
-int  espacePointilles = 4,taillePointille=LCDWIDTH/NOMBREPOINTILLES-espacePointilles, perdu = 0, score = 0;
+int  espacePointilles = 4,taillePointille=LCDWIDTH/NOMBREPOINTILLES-espacePointilles, perdu = 0, score = 0, debut = 1;
+int vitesse=2;
+const char strEasy[] PROGMEM = "Easy";
+const char strHard[] PROGMEM = "Hard";
+const char strExtreme[] PROGMEM = "Extreme";
+const char strExit[] PROGMEM = "Exit";
+const char* const menu[4] PROGMEM = {strEasy,strHard,strExtreme,strExit};
 const byte voiture[] PROGMEM = {16,8,
 B00000111,B11110000,
 B00001011,B11010000,
@@ -80,6 +86,7 @@ B00111100,
 void dVoiture();
 void dDecor();
 void dObstacles();
+void afficherMenu();
 
 typedef struct Obstacle Obstacle;
 struct Obstacle
@@ -132,7 +139,12 @@ void loop(){
   //updates the gamebuino (the display, the sound, the auto backlight... everything)
   //returns true when it's time to render a new frame (20 times/second)
   if(gb.update()){
-    if (!perdu)
+    if (debut)
+    {
+     debut = 0;
+     afficherMenu(); 
+    }
+    else if (!perdu)
     {
     dDecor();
     dVoiture();
@@ -140,32 +152,29 @@ void loop(){
     }
     else
     {
-      gb.sound.playNote(34,8,1);
+      gb.sound.playCancel();
       gb.display.clear();
       gb.display.print("Your score is: ");
-      gb.display.print(score);
-    }
-    if (gb.buttons.pressed(BTN_C))
-    {
-      voitureY=28;
-      obs[0].y = obs[1].y = obs[2].y = 14;
-      perdu = 0;
-      score = 0;
-      gb.titleScreen(F("Crazycar"));
+      gb.display.println(score);
+      gb.display.print("Press C");
+      if (gb.buttons.pressed(BTN_C))
+      {
+       afficherMenu(); 
+      }
     }
     }
-   }
+    }
 
 void dVoiture()
 {
 
     if ((gb.buttons.repeat(BTN_DOWN,1))&&((voitureY+8)<LIMITEROUTEH))
     {
-      voitureY+=2;
+      voitureY+=vitesse;
     }
     if ((gb.buttons.repeat(BTN_UP,1))&&(voitureY>LIMITEROUTEB))
     {
-      voitureY-=2;
+      voitureY-=vitesse;
     }
     gb.display.drawBitmap(voitureX,voitureY,voiture);
 
@@ -176,10 +185,10 @@ void dDecor()
     gb.display.drawLine(0,LIMITEROUTEB,LCDWIDTH,LIMITEROUTEB);
     for (i=0; i<11; i++)
     {
-      if (dec[i].x<-8){dec[i].x = 80;}
-      if (dec[i+11].x<-8){dec[i+11].x = 80;}
-      gb.display.drawBitmap(dec[i].x-=2,dec[i].y,arbre);
-      gb.display.drawBitmap(dec[i+11].x-=2,dec[i+11].y,arbre);
+      if (dec[i].x<=-8){dec[i].x = 84;}
+      if (dec[i+11].x<=-8){dec[i+11].x = 84;}
+      gb.display.drawBitmap(dec[i].x-=vitesse,dec[i].y,arbre);
+      gb.display.drawBitmap(dec[i+11].x-=vitesse,dec[i+11].y,arbre);
 
     }
     for (i=0;i<NOMBREPOINTILLES+1;i++)
@@ -188,7 +197,7 @@ void dDecor()
       //On dessine les pointilles de la route, 8 et espacePointilles sont les espaces entre les pointillés, ils doivent être égaux
     }
 
-    espacePointilles-=2;
+    espacePointilles-=vitesse;
     if (espacePointilles<-taillePointille-4) {espacePointilles=2;};
 }
 void dObstacles()
@@ -198,19 +207,19 @@ for (i=0; i<3; i++)
   switch (obs[i].nBitmap)
   {
     case 0:
-    gb.display.drawBitmap(obs[i].x-=2,obs[i].y,cone);
+    gb.display.drawBitmap(obs[i].x-=vitesse,obs[i].y,cone);
     if (gb.collideBitmapBitmap(obs[i].x,obs[i].y,cone,voitureX,voitureY,voiture)) {perdu = 1;}
     break;
     case 1: 
-    gb.display.drawBitmap(obs[i].x-=2,obs[i].y,clous);
+    gb.display.drawBitmap(obs[i].x-=vitesse,obs[i].y,clous);
     if (gb.collideBitmapBitmap(obs[i].x,obs[i].y,clous,voitureX,voitureY,voiture)) {perdu = 1;}
     break;
     case 2: 
-    gb.display.drawBitmap(obs[i].x-=2,obs[i].y,animal);
+    gb.display.drawBitmap(obs[i].x-=vitesse,obs[i].y,animal);
     if (gb.collideBitmapBitmap(obs[i].x,obs[i].y,animal,voitureX,voitureY,voiture)) {perdu = 1;}
     break;
     case 3: 
-    gb.display.drawBitmap(obs[i].x-=2,obs[i].y,homme);
+    gb.display.drawBitmap(obs[i].x-=vitesse,obs[i].y,homme);
     if (gb.collideBitmapBitmap(obs[i].x,obs[i].y,homme,voitureX,voitureY,voiture)) {perdu = 1;}
     break;
 
@@ -223,4 +232,32 @@ for (i=0; i<3; i++)
     obs[i].nBitmap = random(4);
   }
 }
+}
+void afficherMenu()
+{
+        voitureY=28;
+        obs[0].y = obs[1].y = obs[2].y = 14;
+        perdu = 0;
+        score = 0;
+        switch(gb.menu(menu,4))
+        {
+        case -1:
+        debut = 1;
+        gb.titleScreen(F("CRAZYCAR"));
+        break;
+        case 0:
+        vitesse = 2;
+        break;
+        case 1:
+        vitesse = 3;
+        break;
+        case 2:
+        vitesse = 4;
+        break;
+        case 3:
+        debut = 1;
+        gb.titleScreen(F("CRAZYCAR"));
+        break;
+       }
+
 }
