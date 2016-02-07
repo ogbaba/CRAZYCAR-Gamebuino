@@ -44,12 +44,12 @@ B00000000,
 };
 const byte clous[] PROGMEM = {8,8,
 B00000000,
-B00010000,
-B00111000,
-B00000100,
-B00001110,
-B00100000,
-B01110000,
+B00011000,
+B00111100,
+B00000110,
+B00001111,
+B00110000,
+B01111000,
 B00000000,
 };
 const byte cone[] PROGMEM = {8,8,
@@ -102,7 +102,7 @@ struct Decor
   int x = 0;
   int y = 0;
 };
-Decor dec[22];
+Decor dec[24];
 
 // the setup routine runs once when Gamebuino starts up
 void setup(){
@@ -111,21 +111,22 @@ void setup(){
   obs[1].x = 30;
   obs[2].x = 60;
   obs[0].y = obs[1].y = obs[2].y = 14;
-  dec[0].x = dec[11].x = 0;
-  dec[1].x = dec[12].x = 8;
-  dec[2].x = dec[13].x = 16;
-  dec[3].x = dec[14].x = 24;
-  dec[4].x = dec[15].x = 32;
-  dec[5].x = dec[16].x = 40;
-  dec[6].x = dec[17].x = 48;
-  dec[7].x = dec[18].x = 56;
-  dec[8].x = dec[19].x = 64;
-  dec[9].x = dec[20].x = 72;
-  dec[10].x = dec[21].x = 80;
-  for (i=0;i<11;i++)
+  dec[0].x = dec[12].x = 0;
+  dec[1].x = dec[13].x = 8;
+  dec[2].x = dec[14].x = 16;
+  dec[3].x = dec[15].x = 24;
+  dec[4].x = dec[16].x = 32;
+  dec[5].x = dec[17].x = 40;
+  dec[6].x = dec[18].x = 48;
+  dec[7].x = dec[19].x = 56;
+  dec[8].x = dec[20].x = 64;
+  dec[9].x = dec[21].x = 72;
+  dec[10].x = dec[22].x = 80;
+  dec[11].x = dec[23].x = 88;
+  for (i=0;i<12;i++)
   {
     dec[i].y= 37;
-    dec[i+11].y= 1;
+    dec[i+12].y= 1;
   }
   
   gb.begin();
@@ -183,12 +184,12 @@ void dDecor()
 {
     gb.display.drawLine(0,LIMITEROUTEH,LCDWIDTH,LIMITEROUTEH);
     gb.display.drawLine(0,LIMITEROUTEB,LCDWIDTH,LIMITEROUTEB);
-    for (i=0; i<11; i++)
+    for (i=0; i<12; i++)
     {
-      if (dec[i].x<=-8){dec[i].x = 84;}
-      if (dec[i+11].x<=-8){dec[i+11].x = 84;}
+      if (dec[i].x<-8){dec[i].x += 96;}
+      if (dec[i+12].x<-8){dec[i+12].x +=96;}
       gb.display.drawBitmap(dec[i].x-=vitesse,dec[i].y,arbre);
-      gb.display.drawBitmap(dec[i+11].x-=vitesse,dec[i+11].y,arbre);
+      gb.display.drawBitmap(dec[i+12].x-=vitesse,dec[i+12].y,arbre);
 
     }
     for (i=0;i<NOMBREPOINTILLES+1;i++)
