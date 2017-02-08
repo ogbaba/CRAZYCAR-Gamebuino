@@ -1,8 +1,3 @@
-#include <Backlight.h>
-#include <Battery.h>
-#include <Buttons.h>
-#include <Display.h>
-#include <Sound.h>
 //imports the SPI library (needed to communicate with Gamebuino's screen)
 #include <SPI.h>
 //imports the Gamebuino library
